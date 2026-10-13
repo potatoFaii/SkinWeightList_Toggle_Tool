@@ -1,0 +1,41 @@
+global proc string[] allListBack() {
+    string $skinTreeView = "theSkinClusterInflList";
+    string $skinTreeViewList[];
+    $skinTreeViewList = `treeView -q -ch "" $skinTreeView`;
+    return $skinTreeViewList;
+}
+
+global proc toggleValue() {
+    global int $current_toggle_value;
+    $current_toggle_value = 1 - $current_toggle_value;
+}
+
+global proc toggleLockVisibility(int $toggle_value) {
+    string $skinTreeView = "theSkinClusterInflList";
+    string $allList[];
+    int $checkLock;
+    int $check = `treeView -q -shi $skinTreeView`;
+    $allList = allListBack();
+    if ($toggle_value == 0) {
+        for ($item in $allList) {
+            $checkLock = `getAttr ($item + ".liw")`;
+            if ($checkLock) {
+                treeView -e -itemVisible $item false $skinTreeView;
+            }
+        }
+        eval("print(\"Result : joint locked <HIDE>\")");
+    } else if ($toggle_value == 1) {
+        $allList = allListBack();
+        for ($item in $allList) {
+            treeView -e -itemVisible $item true $skinTreeView;
+        }
+        eval("print(\"Result : joint locked <UNHIDE>\")");
+    }
+}
+
+if (!`exists current_toggle_value`) {
+    int $current_toggle_value = 0;
+}
+
+toggleValue;
+toggleLockVisibility($current_toggle_value);
